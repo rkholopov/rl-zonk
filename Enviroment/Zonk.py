@@ -9,12 +9,12 @@ class Zonk:
         self.score = 0
         return self.state, self.score
     def step(self, action):
-        if action == -1 and self.score >= 300:
+        if action == '-1' and self.score >= 300:
             return -1, 0, True
 
         c = []
         for i in range(len(action)):
-            if action[i]=='1':
+            if action[i] == '1':
                 c.append(self.state[i])
 
         best = 0

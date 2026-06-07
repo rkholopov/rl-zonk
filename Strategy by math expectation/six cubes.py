@@ -1,6 +1,6 @@
 m = 251
-x = -50
-while m>=x:
+x = 250
+while m >= x:
     m=0
     x+=50
     print(x)
