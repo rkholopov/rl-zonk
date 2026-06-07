@@ -96,9 +96,11 @@ def reward(x, k, show_distribution=False):
         return m
 
 
+'''
 start = 0
 r, dist = reward(start, 6, show_distribution=True)
-# pd.DataFrame(dist).to_excel('Distribution_of_SBME.xlsx', index=False, header=False)
+pd.DataFrame(dist).to_excel('Distribution_of_SBME.xlsx', index=False, header=False)
 
 print(dist)
 print(start, r-start)
+'''
