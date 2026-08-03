@@ -1,16 +1,20 @@
 import random
 
+
 class Zonk:
     def __init__(self):
-        self.state = sorted([random.randint(1, 6) for i in range(6)])
+        self.state = 6
         self.score = 0
     def reset(self):
-        self.state = sorted([random.randint(1, 6) for i in range(6)])
+        self.state = 6
         self.score = 0
-        return self.state, self.score
+        return tuple([self.state, self.score]), self.score, False
     def step(self, action):
         if action == '-1' and self.score >= 300:
             return -1, 0, True
+        if action == '0':
+            self.state = sorted([random.randint(1,6) for _ in range(self.state)])
+            return self.state, 0, False
 
         c = []
         for i in range(len(action)):
@@ -47,13 +51,52 @@ class Zonk:
 
         best = max(best, 50 * c.count(5) + 100 * c.count(1))
 
-
         if best == 0:
             return -1, -self.score, True
         else:
-            if len(self.state)-len(c)==0:
-                self.state = sorted([random.randint(1, 6) for i in range(6)])
+            if len(self.state)-len(c) == 0:
+                self.state = 6
             else:
-                self.state = sorted([random.randint(1, 6) for i in range(len(self.state)-len(c))])
+                self.state = len(self.state)-len(c)
             self.score += best
             return tuple([self.state, self.score]), best, False
+
+    def find_possible_moves(self):
+        c = self.state
+        if isinstance(c, int):
+            if self.score >= 300:
+                ans = {0: '-1', 1: '0'}
+            else:
+                ans = {0: '0'}
+            return ans
+
+        ans = {0: '-1'}
+        cnt = 1
+
+        for i in range(1, 2**len(c)):
+            x = i
+            move = []
+            for j in range(len(c)):
+                move.append(str(x%2))
+                x = x//2
+
+            move = ''.join(move)
+            s = []
+            ok = True
+            for j in range(len(move)):
+                if move[j] == '1':
+                    s.append(self.state[j])
+
+            for j in range(2,7):
+                if j!=5 and 0 < s.count(j) < 3:
+                    ok = False
+
+            if move=='111111':
+                if s[0]==s[1]-1==s[2]-2==s[3]-3==s[4]-4==s[5]-5 or s[0]==s[1] and s[2]==s[3] and s[4]==s[5]:
+                    ok = True
+
+            if ok:
+                ans[cnt] = move
+                cnt += 1
+
+        return ans
