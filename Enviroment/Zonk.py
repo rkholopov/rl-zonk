@@ -8,19 +8,23 @@ class Zonk:
     def reset(self):
         self.state = 6
         self.score = 0
-        return tuple([self.state, self.score]), self.score, False
+        return tuple(['Stop/Continue'] + [self.state, self.score]), self.score, False, {'possible_moves': self.find_possible_moves()}
     def step(self, action):
-        if action == '-1' and self.score >= 300:
-            return -1, 0, True
+        action = self.find_possible_moves()[action]
+
+        if action == '-1' and self.score >= 300 and isinstance(self.state, int):
+            return -1, 0, True, {}
+        if action == '-1' and (self.score < 300 or not(isinstance(self.state, int))):
+            return -1, -self.score, True, {}
         if action == '0':
-            self.state = sorted([random.randint(1,6) for _ in range(self.state)])
-            return self.state, 0, False
+            self.state = tuple(['Choose cubes'] + [self.score] + sorted([random.randint(1,6) for _ in range(self.state)]))
+            return self.state, 0, False, {'possible_moves': self.find_possible_moves()}
 
         c = []
         for i in range(len(action)):
             if action[i] == '1':
-                c.append(self.state[i])
-
+                c.append(self.state[i+2])
+        print(c)
         best = 0
 
         if len(c) == 6 and c[0] == c[1] - 1 == c[2] - 2 == c[3] - 3 == c[4] - 4 == c[5] - 5:
@@ -52,14 +56,14 @@ class Zonk:
         best = max(best, 50 * c.count(5) + 100 * c.count(1))
 
         if best == 0:
-            return -1, -self.score, True
+            return -1, -self.score, True, {}
         else:
-            if len(self.state)-len(c) == 0:
+            if len(self.state)-len(c)-2 == 0:
                 self.state = 6
             else:
-                self.state = len(self.state)-len(c)
+                self.state = len(self.state)-len(c)-2
             self.score += best
-            return tuple([self.state, self.score]), best, False
+            return tuple(['Stop/Continue'] + [self.state, self.score]), best, False, {'possible_moves': self.find_possible_moves()}
 
     def find_possible_moves(self):
         c = self.state
@@ -69,6 +73,8 @@ class Zonk:
             else:
                 ans = {0: '0'}
             return ans
+
+        c = c[2:]
 
         ans = {0: '-1'}
         cnt = 1
@@ -85,7 +91,7 @@ class Zonk:
             ok = True
             for j in range(len(move)):
                 if move[j] == '1':
-                    s.append(self.state[j])
+                    s.append(c[j])
 
             for j in range(2,7):
                 if j!=5 and 0 < s.count(j) < 3:
@@ -100,3 +106,14 @@ class Zonk:
                 cnt += 1
 
         return ans
+
+
+z = Zonk()
+
+s, r, terminated, info = z.reset()
+
+while not(terminated):
+    print(s)
+    print(info['possible_moves'])
+    a = int(input('Ваш ход: '))
+    s,r, terminated, info = z.step(a)
