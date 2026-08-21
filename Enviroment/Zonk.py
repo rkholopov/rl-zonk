@@ -24,7 +24,7 @@ class Zonk:
         for i in range(len(action)):
             if action[i] == '1':
                 c.append(self.state[i+2])
-        print(c)
+
         best = 0
 
         if len(c) == 6 and c[0] == c[1] - 1 == c[2] - 2 == c[3] - 3 == c[4] - 4 == c[5] - 5:
@@ -106,14 +106,3 @@ class Zonk:
                 cnt += 1
 
         return ans
-
-
-z = Zonk()
-
-s, r, terminated, info = z.reset()
-
-while not(terminated):
-    print(s)
-    print(info['possible_moves'])
-    a = int(input('Ваш ход: '))
-    s,r, terminated, info = z.step(a)
