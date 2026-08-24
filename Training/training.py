@@ -1,7 +1,8 @@
 from Agents.Monte_Carlo import Monte_Carlo
+from Agents.Baseline import Baseline
 from Enviroment.Zonk import Zonk
 
-agent = Monte_Carlo(0.5)
+agent = Monte_Carlo("Sampling")
 env = Zonk()
 
 score = []
@@ -9,12 +10,11 @@ n=0
 while True:
     n += 1
 
-    s, r, terminated, info = env.reset()
+    s, info = env.reset()
     pos_moves = len(info['possible_moves'])
     a = agent.action(s, pos_moves)
     s1, r, terminated, info = env.step(a)
     episode = [(s, a, r, s1, pos_moves)]
-    pos_moves = len(info['possible_moves'])
     total_reward = r
 
     while not(terminated):
@@ -33,12 +33,11 @@ while True:
     if n%10000==0:
         score1 = []
         for i in range(10000):
-            s, r, terminated, info = env.reset()
+            s, info = env.reset()
             pos_moves = len(info['possible_moves'])
             a = agent.action(s, pos_moves, optimal=True)
             s1, r, terminated, info = env.step(a)
             episode = [(s, a, r, s1, pos_moves)]
-            pos_moves = len(info['possible_moves'])
             total_reward = r
 
             while not (terminated):
@@ -53,9 +52,5 @@ while True:
             score1.append(total_reward)
 
         print(f'На обучении: {sum(score)/len(score)}, На инференсе: {sum(score1)/len(score1)}')
-        if sum(score)/len(score) > 200:
-            agent.soft = 0.1
-        if sum(score)/len(score) > 320:
-            agent.soft = 0.01
 
     agent.update(episode)

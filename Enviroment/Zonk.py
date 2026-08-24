@@ -8,7 +8,7 @@ class Zonk:
     def reset(self):
         self.state = 6
         self.score = 0
-        return tuple(['Stop/Continue'] + [self.state, self.score]), self.score, False, {'possible_moves': self.find_possible_moves()}
+        return tuple(['Stop/Continue'] + [self.state, self.score]), {'possible_moves': self.find_possible_moves()}
     def step(self, action):
         action = self.find_possible_moves()[action]
 
@@ -69,15 +69,14 @@ class Zonk:
         c = self.state
         if isinstance(c, int):
             if self.score >= 300:
-                ans = {0: '-1', 1: '0'}
+                ans = ['-1', '0']
             else:
-                ans = {0: '0'}
+                ans = ['0']
             return ans
 
         c = c[2:]
 
-        ans = {0: '-1'}
-        cnt = 1
+        ans = ['-1']
 
         for i in range(1, 2**len(c)):
             x = i
@@ -102,7 +101,6 @@ class Zonk:
                     ok = True
 
             if ok:
-                ans[cnt] = move
-                cnt += 1
+                ans.append(move)
 
         return ans

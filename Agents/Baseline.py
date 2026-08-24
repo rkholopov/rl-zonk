@@ -1,0 +1,25 @@
+class Baseline:
+    def __init__(self):
+        ...
+
+    def action(self, state, pos_moves, optimal=False):
+        if state[0] == "Stop/Continue":
+            if state[1] == 6 and state[2] >= 16450:
+                return 0
+            elif state[1] == 5 and state[2] >= 3050:
+                return 0
+            elif state[1] == 4 and state[2] >= 1050:
+                return 0
+            elif state[1] == 3 and state[2] >= 400:
+                return 0
+            elif state[1] < 3 and state[2] >= 300:
+                return 0
+            elif state[2] < 300:
+                return 0
+            else:
+                return 1
+        else:
+            return pos_moves-1
+
+    def update(self, episode):
+        ...
