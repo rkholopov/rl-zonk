@@ -2,7 +2,7 @@ from Agents.Monte_Carlo import Monte_Carlo
 from Agents.Baseline import Baseline
 from Enviroment.Zonk import Zonk
 
-agent = Monte_Carlo("Sampling")
+agent = Monte_Carlo(0.1)
 env = Zonk()
 
 score = []
@@ -27,6 +27,8 @@ while True:
         total_reward += r
 
     score.append(total_reward)
+    agent.update(episode)
+
     if len(score)>10000:
         score.pop(0)
 
@@ -53,4 +55,4 @@ while True:
 
         print(f'На обучении: {sum(score)/len(score)}, На инференсе: {sum(score1)/len(score1)}')
 
-    agent.update(episode)
+

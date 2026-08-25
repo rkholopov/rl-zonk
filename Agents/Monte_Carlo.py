@@ -10,7 +10,7 @@ class Monte_Carlo(Baseline):
         self.rng = np.random.default_rng()
 
     def action(self, state, pos_moves, optimal=False):
-        self.q[state] = self.q.get(state, np.array([0 for _ in range(pos_moves)]))
+        self.q[state] = self.q.get(state, np.array([1500.0 for _ in range(pos_moves)]))
         if not(optimal) and self.soft != "Sampling" and self.rng.random() < self.soft:
             return self.rng.choice([i for i in range(pos_moves)])
         if not(optimal) and self.soft == "Sampling":
@@ -24,11 +24,11 @@ class Monte_Carlo(Baseline):
             G += r
             self.entries[s] = self.entries.get(s, [0 for _ in range(pos_moves)])
             self.entries[s][a] += 1
-            self.q[s] = self.entries.get(s, np.array([1500 for _ in range(pos_moves)]))
+            self.q[s] = self.q.get(s, np.array([1500.0 for _ in range(pos_moves)]))
             self.q[s][a] += (G - self.q[s][a]) / self.entries[s][a]
 
-    def softmax(self, x):
+    def softmax(self, x, t=50.0):
         shifted_x = x - np.max(x, axis=-1, keepdims=True)
-        exp_x = np.exp(shifted_x)
+        exp_x = np.exp(shifted_x) / t
         sum_exp_x = np.sum(exp_x, axis=-1, keepdims=True)
         return exp_x / sum_exp_x
