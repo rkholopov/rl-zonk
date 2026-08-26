@@ -1,12 +1,13 @@
-from Agents.Monte_Carlo import Monte_Carlo
+from Agents.Monte_Carlo import MonteCarlo
+from Agents.MonteCarloWIS import MonteCarloWIS
 from Agents.Baseline import Baseline
 from Enviroment.Zonk import Zonk
 
-agent = Monte_Carlo(0.1)
+agent = MonteCarloWIS("Sampling")
 env = Zonk()
 
 score = []
-n=0
+n = 0
 while True:
     n += 1
 
