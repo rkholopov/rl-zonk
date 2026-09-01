@@ -1,9 +1,10 @@
 from Agents.Monte_Carlo import MonteCarlo
 from Agents.MonteCarloWIS import MonteCarloWIS
 from Agents.Baseline import Baseline
+from Agents.QLearning import QLearning
 from Enviroment.Zonk import Zonk
 
-agent = MonteCarloWIS("Sampling")
+agent = QLearning(0.1, 0.5)
 env = Zonk()
 
 score = []
@@ -55,5 +56,3 @@ while True:
             score1.append(total_reward)
 
         print(f'На обучении: {sum(score)/len(score)}, На инференсе: {sum(score1)/len(score1)}')
-
-
