@@ -26,8 +26,6 @@ class CrossEntropy(Baseline):
                 self.policy[i] = self.policy[i] / 2
             percentile = np.percentile(np.array(self.rewards), self.percentile)
 
-            print(sorted(self.rewards))
-            print(f'{percentile = }')
             for i in range(len(self.rewards)):
                 if self.rewards[i] >= percentile:
                     for j in range(len(self.train[i])):
