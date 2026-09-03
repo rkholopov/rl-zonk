@@ -1,10 +1,12 @@
 from Agents.Monte_Carlo import MonteCarlo
 from Agents.MonteCarloWIS import MonteCarloWIS
+from Agents.CrossEntropy import CrossEntropy
 from Agents.Baseline import Baseline
 from Agents.QLearning import QLearning
 from Enviroment.Zonk import Zonk
 
-agent = QLearning(0.1, 0.5)
+
+agent = CrossEntropy(85)
 env = Zonk()
 
 score = []

@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class Baseline:
     def __init__(self):
         ...
@@ -23,3 +26,9 @@ class Baseline:
 
     def update(self, episode):
         ...
+
+    def softmax(self, x, t=75.0):
+        shifted_x = x - np.max(x, axis=-1, keepdims=True)
+        exp_x = np.exp(shifted_x / t)
+        sum_exp_x = np.sum(exp_x, axis=-1, keepdims=True)
+        return exp_x / sum_exp_x

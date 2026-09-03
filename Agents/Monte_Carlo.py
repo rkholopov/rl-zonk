@@ -28,9 +28,3 @@ class MonteCarlo(Baseline):
             self.entries[s][a] += 1
             self.q[s] = self.q.get(s, np.array([1500.0 for _ in range(pos_moves)]))
             self.q[s][a] += (G - self.q[s][a]) / self.entries[s][a]
-
-    def softmax(self, x, t=75.0):
-        shifted_x = x - np.max(x, axis=-1, keepdims=True)
-        exp_x = np.exp(shifted_x / t)
-        sum_exp_x = np.sum(exp_x, axis=-1, keepdims=True)
-        return exp_x / sum_exp_x
