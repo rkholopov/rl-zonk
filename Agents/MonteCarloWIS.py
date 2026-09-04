@@ -3,8 +3,8 @@ from Agents.Monte_Carlo import MonteCarlo
 
 
 class MonteCarloWIS(MonteCarlo):
-    def __init__(self, soft):
-        super().__init__(soft)
+    def __init__(self, soft, alpha, percentile):
+        super().__init__(soft, alpha, percentile)
         self.q = {}
         self.weights = {}
         self.soft = soft

@@ -2,7 +2,7 @@ import numpy as np
 
 
 class Baseline:
-    def __init__(self):
+    def __init__(self, soft, alpha, percentile):
         ...
 
     def action(self, state, pos_moves, optimal=False):

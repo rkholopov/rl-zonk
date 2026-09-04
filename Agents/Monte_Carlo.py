@@ -3,8 +3,8 @@ from Agents.Baseline import Baseline
 
 
 class MonteCarlo(Baseline):
-    def __init__(self, soft):
-        super().__init__()
+    def __init__(self, soft, alpha, percentile):
+        super().__init__(soft, alpha, percentile)
         self.q = {}
         self.entries = {}
         self.soft = soft

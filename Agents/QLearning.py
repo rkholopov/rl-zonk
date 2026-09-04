@@ -3,8 +3,8 @@ from Agents.Monte_Carlo import MonteCarlo
 
 
 class QLearning(MonteCarlo):
-    def __init__(self, soft, alpha):
-        super().__init__(soft)
+    def __init__(self, soft, alpha, percentile):
+        super().__init__(soft, alpha, percentile)
         self.q = {}
         self.soft = soft
         self.alpha = alpha

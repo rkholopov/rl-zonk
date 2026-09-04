@@ -3,8 +3,8 @@ import numpy as np
 
 
 class CrossEntropy(Baseline):
-    def __init__(self, percentile):
-        super().__init__()
+    def __init__(self, soft, alpha, percentile):
+        super().__init__(soft, alpha, percentile)
         self.percentile = percentile
         self.policy = {}
         self.rng = np.random.default_rng()
