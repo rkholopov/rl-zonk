@@ -28,7 +28,7 @@ def reward(x, k, show_distribution=False):
                             if c[-1] <= 10:
                                 if c[0] == c[1] - 1 == c[2] - 2 == c[3] - 3 == c[4] - 4 == c[5] - 5 and k == 6:
                                     best = reward(x+1500,6)
-                                if c[0] == c[1] and c[2] == c[3] and c[4] == c[5] and k == 6:
+                                if c[0] == c[1] and c[2] == c[3] and c[4] == c[5] and c[1] != c[2] and c[3] != c[4] and k == 6:
                                     best = max(best, reward(x+750, 6))
                                 if c[0] == c[1] == c[2] and c[3] == c[4] == c[5] and k == 6:
                                     if c[0] == 1:

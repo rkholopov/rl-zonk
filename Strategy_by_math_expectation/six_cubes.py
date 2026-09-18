@@ -14,7 +14,7 @@ while m >= x:
                             c = sorted([i1,i2,i3,i4,i5,i6])
                             if c[0]==c[1]-1==c[2]-2==c[3]-3==c[4]-4==c[5]-5:
                                 best = 1500
-                            if c[0]==c[1] and c[2]==c[3] and c[4]==c[5]:
+                            if c[0]==c[1] and c[2]==c[3] and c[4]==c[5] and c[1]!=c[2] and c[3]!=c[4]:
                                 best = max(best, 750)
                             if c[0]==c[1]==c[2] and c[3]==c[4]==c[5]:
                                 if c[0]==1:

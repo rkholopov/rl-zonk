@@ -63,7 +63,7 @@
 Из корневой папки проекта выполните:
 
 ```bash
-python training/training.py --agent QLearning --episodes 50000
+python Training/training.py --agent QLearning --episodes 50000
 ```
 
 ### Доступные агенты
@@ -84,10 +84,18 @@ python training/training.py --agent QLearning --episodes 50000
 | `--episodes` | Общее число эпизодов обучения | `100000` |
 | `--eval_interval` | Как часто (в эпизодах) проводить оценку | `10000` |
 | `--eval_episodes` | Число эпизодов для оценки | `10000` |
+| `--seed` | Seed для воспроизводимого запуска | `None` |
 
-Пример с полным набором параметров:
+Для повторяемого запуска добавьте `--seed 42`. Seed задаёт генераторы бросков
+и действий агента; оценка использует отдельный генератор бросков.
+
+Для `CrossEntropy` параметр `--soft` задаёт долю равномерного исследования:
+по умолчанию `0.1`; при `Sampling` также используется `0.1`. Значение `0`
+отключает эту примесь.
+
+Пример запуска с параметрами:
 ```bash
-python training/training.py --agent CrossEntropy --percentile 90 --episodes 200000 --eval_interval 5000
+python Training/training.py --agent CrossEntropy --percentile 90 --episodes 200000 --eval_interval 5000 --seed 42
 ```
 
 ---

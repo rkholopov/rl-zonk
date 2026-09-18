@@ -2,7 +2,8 @@ import random
 
 
 class Zonk:
-    def __init__(self):
+    def __init__(self, seed=None):
+        self.rng = random.Random(seed)
         self.state = 6
         self.score = 0
     def reset(self):
@@ -17,7 +18,7 @@ class Zonk:
         if action == '-1' and (self.score < 300 or not(isinstance(self.state, int))):
             return -1, -self.score, True, {}
         if action == '0':
-            self.state = tuple(['Choose cubes'] + [self.score] + sorted([random.randint(1,6) for _ in range(self.state)]))
+            self.state = tuple(['Choose cubes'] + [self.score] + sorted([self.rng.randint(1,6) for _ in range(self.state)]))
             return self.state, 0, False, {'possible_moves': self.find_possible_moves()}
 
         c = []
@@ -34,6 +35,8 @@ class Zonk:
         if len(c) == 6 and c[0] == c[1] == c[2] and c[3] == c[4] == c[5]:
             if c[0] == 1:
                 best = max(best, c[0] * 1000 + c[3] * 100)
+            else:
+                best = max(best, c[0] * 100 + c[3] * 100)
 
         if c.count(1) >= 3:
             best = max(best, 1000 * (c.count(1) - 2) + 50 * c.count(5))
@@ -97,7 +100,7 @@ class Zonk:
                     ok = False
 
             if move=='111111':
-                if s[0]==s[1]-1==s[2]-2==s[3]-3==s[4]-4==s[5]-5 or s[0]==s[1] and s[2]==s[3] and s[4]==s[5]:
+                if s[0]==s[1]-1==s[2]-2==s[3]-3==s[4]-4==s[5]-5 or (s[0]==s[1] and s[2]==s[3] and s[4]==s[5] and s[1]!=s[2] and s[3]!=s[4]):
                     ok = True
 
             if ok:
