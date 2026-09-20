@@ -3,7 +3,9 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
+import numpy as np
 import argparse
+from collections import deque
 from Agents.Monte_Carlo import MonteCarlo
 from Agents.MonteCarloWIS import MonteCarloWIS
 from Agents.CrossEntropy import CrossEntropy
@@ -22,73 +24,64 @@ def parse_args():
     parser.add_argument('--episodes', type=int, default=100000, help='Общее число эпизодов')
     parser.add_argument('--eval_interval', type=int, default=10000, help='Как часто оценивать')
     parser.add_argument('--eval_episodes', type=int, default=10000, help='Число эпизодов для оценки')
-    return parser.parse_args()
+    parser.add_argument('--seed', type=int, default=None, help='Seed для воспроизводимого запуска')
+    args = parser.parse_args()
+    if args.seed is not None and args.seed < 0:
+        parser.error('--seed должен быть неотрицательным')
+    if args.soft != 'Sampling':
+        try:
+            args.soft = float(args.soft)
+        except ValueError:
+            parser.error('--soft должен быть числом от 0 до 1 или Sampling')
+        if not 0 <= args.soft <= 1:
+            parser.error('--soft должен быть от 0 до 1')
+    if args.episodes < 0 or args.eval_interval <= 0 or args.eval_episodes <= 0:
+        parser.error('episodes >= 0, eval_interval > 0, eval_episodes > 0')
+    if not 0 < args.alpha <= 1 or not 0 <= args.percentile <= 100:
+        parser.error('0 < alpha <= 1, 0 <= percentile <= 100')
+    return args
 
 
-args = parse_args()
+def run_episode(env, agent, optimal=False):
+    s, info = env.reset()
+    episode = []
+    total_reward = 0
+    terminated = False
+    while not terminated:
+        pos_moves = len(info['possible_moves'])
+        a = agent.action(s, pos_moves, optimal=optimal)
+        s1, r, terminated, info = env.step(a)
+        transition = (s, a, r, s1, pos_moves)
+        episode.append(transition)
+        total_reward += r
+        s = s1
+    return episode, total_reward
 
-agent_map = {
+
+def main():
+    args = parse_args()
+    agent_map = {
         'MonteCarlo': MonteCarlo,
         'MonteCarloWIS': MonteCarloWIS,
         'CrossEntropy': CrossEntropy,
         'Baseline': Baseline,
-        'QLearning': QLearning
+        'QLearning': QLearning,
     }
+    agent = agent_map[args.agent](soft=args.soft, alpha=args.alpha, percentile=args.percentile)
+    if hasattr(agent, 'rng'):
+        agent.rng = np.random.default_rng(args.seed)
+    env = Zonk(seed=args.seed)
+    eval_env = Zonk(seed=None if args.seed is None else args.seed + 1)
+    score = deque(maxlen=args.eval_interval)
+    for n in range(1, args.episodes + 1):
+        episode, total_reward = run_episode(env, agent)
+        score.append(total_reward)
+        agent.update(episode)
+        if n % args.eval_interval == 0:
+            eval_scores = [run_episode(eval_env, agent, optimal=True)[1]
+                           for _ in range(args.eval_episodes)]
+            print(f'На обучении: {sum(score) / len(score)}, На инференсе: {sum(eval_scores) / len(eval_scores)}')
 
-agent_class = agent_map[args.agent]
 
-if args.soft != "Sampling":
-    soft = float(args.soft)
-
-agent = agent_class(soft=soft, alpha=args.alpha, percentile=args.percentile)
-env = Zonk()
-
-score = []
-n = 0
-while n <= args.episodes:
-    n += 1
-
-    s, info = env.reset()
-    pos_moves = len(info['possible_moves'])
-    a = agent.action(s, pos_moves)
-    s1, r, terminated, info = env.step(a)
-    episode = [(s, a, r, s1, pos_moves)]
-    total_reward = r
-
-    while not(terminated):
-        s = s1
-        pos_moves = len(info['possible_moves'])
-        a = agent.action(s, pos_moves)
-        s1, r, terminated, info = env.step(a)
-        episode.append((s, a, r, s1, pos_moves))
-
-        total_reward += r
-
-    score.append(total_reward)
-    agent.update(episode)
-
-    if len(score) > args.eval_interval:
-        score.pop(0)
-
-    if n % args.eval_interval == 0:
-        score1 = []
-        for i in range(args.eval_episodes):
-            s, info = env.reset()
-            pos_moves = len(info['possible_moves'])
-            a = agent.action(s, pos_moves, optimal=True)
-            s1, r, terminated, info = env.step(a)
-            episode = [(s, a, r, s1, pos_moves)]
-            total_reward = r
-
-            while not (terminated):
-                s = s1
-                pos_moves = len(info['possible_moves'])
-                a = agent.action(s, pos_moves, optimal=True)
-                s1, r, terminated, info = env.step(a)
-                episode.append((s, a, r, s1, pos_moves))
-
-                total_reward += r
-
-            score1.append(total_reward)
-
-        print(f'На обучении: {sum(score)/len(score)}, На инференсе: {sum(score1)/len(score1)}')
+if __name__ == '__main__':
+    main()

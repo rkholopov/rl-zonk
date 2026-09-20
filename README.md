@@ -84,10 +84,15 @@ python training/training.py --agent QLearning --episodes 50000
 | `--episodes` | Общее число эпизодов обучения | `100000` |
 | `--eval_interval` | Как часто (в эпизодах) проводить оценку | `10000` |
 | `--eval_episodes` | Число эпизодов для оценки | `10000` |
+| `--seed` | Неотрицательный seed для воспроизводимого запуска | `None` |
 
-Пример с полным набором параметров:
+Для воспроизводимого запуска с теми же параметрами добавьте `--seed 42`.
+Seed задаёт генераторы бросков среды и действий агента. Оценка использует
+отдельный генератор бросков. Без `--seed` генераторы инициализируются случайно.
+
+Пример запуска с параметрами:
 ```bash
-python training/training.py --agent CrossEntropy --percentile 90 --episodes 200000 --eval_interval 5000
+python training/training.py --agent CrossEntropy --percentile 90 --episodes 200000 --eval_interval 5000 --seed 42
 ```
 
 ---
