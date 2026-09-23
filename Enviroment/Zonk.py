@@ -14,9 +14,9 @@ class Zonk:
         action = self.find_possible_moves()[action]
 
         if action == '-1' and self.score >= 300 and isinstance(self.state, int):
-            return -1, 0, True, {}
+            return -1, 0, True, {'possible_moves': []}
         if action == '-1' and (self.score < 300 or not(isinstance(self.state, int))):
-            return -1, -self.score, True, {}
+            return -1, -self.score, True, {'possible_moves': []}
         if action == '0':
             self.state = tuple(['Choose cubes'] + [self.score] + sorted([self.rng.randint(1,6) for _ in range(self.state)]))
             return self.state, 0, False, {'possible_moves': self.find_possible_moves()}
@@ -59,7 +59,7 @@ class Zonk:
         best = max(best, 50 * c.count(5) + 100 * c.count(1))
 
         if best == 0:
-            return -1, -self.score, True, {}
+            return -1, -self.score, True, {'possible_moves': []}
         else:
             if len(self.state)-len(c)-2 == 0:
                 self.state = 6
