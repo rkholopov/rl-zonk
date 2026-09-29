@@ -50,7 +50,8 @@ def run_episode(env, agent, optimal=False):
     while not terminated:
         pos_moves = len(info['possible_moves'])
         a = agent.action(s, pos_moves, optimal=optimal)
-        s1, r, terminated, info = env.step(a)
+        s1, r, terminated, truncated, info = env.step(a)
+        terminated = terminated or truncated
         transition = (s, a, r, s1, pos_moves)
         episode.append(transition)
         total_reward += r

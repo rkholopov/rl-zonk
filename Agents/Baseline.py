@@ -6,23 +6,15 @@ class Baseline:
         ...
 
     def action(self, state, pos_moves, optimal=False):
-        if state[0] == "Stop/Continue":
-            if state[1] == 6 and state[2] >= 16450:
-                return 0
-            elif state[1] == 5 and state[2] >= 3050:
-                return 0
-            elif state[1] == 4 and state[2] >= 1050:
-                return 0
-            elif state[1] == 3 and state[2] >= 400:
-                return 0
-            elif state[1] < 3 and state[2] >= 300:
-                return 0
-            elif state[2] < 300:
-                return 0
-            else:
-                return 1
-        else:
-            return pos_moves-1
+        phase, score, num_dice = state[:3]
+        if phase == 2:
+            raise ValueError("No actions in a terminal state")
+        if phase == 1:
+            return pos_moves - 1
+        if score < 300:
+            return 0
+        thresholds = {1: 300, 2: 300, 3: 400, 4: 1050, 5: 3050, 6: 16450}
+        return 0 if score >= thresholds[num_dice] else 1
 
     def update(self, episode):
         ...

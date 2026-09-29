@@ -1,3 +1,7 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
 import numpy as np
 from collections import deque
 from Agents.Monte_Carlo import MonteCarlo
@@ -32,17 +36,16 @@ def main():
         while not terminated:
             pos_moves = len(info['possible_moves'])
             if pos_moves > 1:
-                for i in range(75):
+                for i in range(100):
                     env1 = Zonk()
-                    env1.state = env.state
-                    env1.score = env.score
-                    episode1 = episode.copy()
-                    st = s
+                    st, info1 = env1.reset(options={"state": env.get_state()})
+                    episode1 = []
                     terminated1 = terminated
-                    pos_moves1 = pos_moves
+                    pos_moves1 = len(info1["possible_moves"])
                     while not terminated1:
                         a = agent.action(st, pos_moves1, optimal=False)
-                        st1, r, terminated1, info1 = env1.step(a)
+                        st1, r, terminated1, truncated1, info1 = env1.step(a)
+                        terminated1 = terminated1 or truncated1
                         transition = (st, a, r, st1, pos_moves1)
                         episode1.append(transition)
                         st = st1
@@ -50,7 +53,8 @@ def main():
                     agent.update(episode1)
 
             a = agent.action(s, pos_moves, optimal=True)
-            s1, r, terminated, info = env.step(a)
+            s1, r, terminated, truncated, info = env.step(a)
+            terminated = terminated or truncated
             transition = (s, a, r, s1, pos_moves)
             episode.append(transition)
             total_reward += r
