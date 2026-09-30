@@ -26,6 +26,7 @@ def main():
     percentile = 85
     agent = MonteCarloWIS(soft=soft, alpha=alpha, percentile=percentile)
     env = Zonk()
+    env1 = Zonk()
     score = deque(maxlen=500)
     n = 0
     start = time()
@@ -39,7 +40,6 @@ def main():
             pos_moves = len(info['possible_moves'])
             if pos_moves > 1:
                 for i in range(100):
-                    env1 = Zonk()
                     st, info1 = env1.reset(options={"state": env.get_state()})
                     episode1 = []
                     terminated1 = terminated

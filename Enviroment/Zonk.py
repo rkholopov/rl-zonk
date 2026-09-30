@@ -107,7 +107,7 @@ class Zonk(gym.Env):
         moves = self.find_possible_moves()
         mask = np.zeros(64, dtype=np.int8)
         mask[:len(moves)] = 1
-        return {"possible_moves": moves, "action_mask": mask}
+        return {"possible_moves": moves.copy(), "action_mask": mask}
 
     def _finish(self, reward, invalid=False):
         self.phase = self.TERMINAL
@@ -163,7 +163,7 @@ class Zonk(gym.Env):
         return selected
 
     def _points(self, move):
-        return self.rewards[tuple([self.get_state(), move])]
+        return self.rewards[(self.dice, move)]
 
     @staticmethod
     def _is_three_pairs(dice):
@@ -180,8 +180,8 @@ class Zonk(gym.Env):
                 return ['-1', '0']
             return ['0']
 
-        if self.get_state() in self.possible_moves:
-            return self.possible_moves[self.get_state()]
+        if self.dice in self.possible_moves:
+            return self.possible_moves[self.dice]
 
         moves = ['-1']
 
@@ -217,7 +217,7 @@ class Zonk(gym.Env):
                 valid = True
                 reward = 750
             if valid:
-                self.rewards[tuple([self.get_state(), move])] = reward
+                self.rewards[(self.dice, move)] = reward
                 moves.append(move)
-        self.possible_moves[self.get_state()] = moves
+        self.possible_moves[self.dice] = moves
         return moves
