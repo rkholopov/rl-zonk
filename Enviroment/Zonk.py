@@ -45,6 +45,8 @@ class Zonk(gym.Env):
         self.score = 0
         self.num_dice = 6
         self.dice = ()
+        self.rewards = dict()
+        self.possible_moves = dict()
 
     def reset(self, *, seed=None, options=None):
         if seed is None and not self._has_reset:
@@ -142,7 +144,7 @@ class Zonk(gym.Env):
             reward = 0
         else:
             selected = self._selected_dice(move)
-            reward = self._points(selected)
+            reward = self._points(move)
             if reward == 0:
                 return self._finish(-self.score)
             self.score += reward
@@ -160,41 +162,15 @@ class Zonk(gym.Env):
                 selected.append(self.dice[index])
         return selected
 
-    @staticmethod
-    def _points(dice):
-        counts = {}
-        for face in range(1, 7):
-            counts[face] = dice.count(face)
-
-        points = 0
-        for face, count in counts.items():
-            if count >= 3:
-                if face == 1:
-                    triple_points = 1000
-                else:
-                    triple_points = face * 100
-
-                points += triple_points * (count - 2)
-            elif face == 1:
-                points += count * 100
-            elif face == 5:
-                points += count * 50
-
-        if dice == [1, 2, 3, 4, 5, 6]:
-            return 1500
-        if Zonk._is_three_pairs(dice):
-            return max(points, 750)
-        return points
+    def _points(self, move):
+        return self.rewards[tuple([self.get_state(), move])]
 
     @staticmethod
     def _is_three_pairs(dice):
         if len(dice) != 6:
             return False
-        pairs = 0
-        for face in range(1, 7):
-            if dice.count(face) == 2:
-                pairs += 1
-        return pairs == 3
+        dice.sort()
+        return dice[0] == dice[1] != dice[2] == dice[3] != dice[4] == dice[5]
 
     def find_possible_moves(self):
         if self.phase == self.TERMINAL:
@@ -204,10 +180,14 @@ class Zonk(gym.Env):
                 return ['-1', '0']
             return ['0']
 
+        if self.get_state() in self.possible_moves:
+            return self.possible_moves[self.get_state()]
+
         moves = ['-1']
 
         for selection_number in range(1, 2 ** self.num_dice):
             number = selection_number
+            reward = 0
             flags = []
             for _ in range(self.num_dice):
                 flags.append(str(number % 2))
@@ -216,16 +196,28 @@ class Zonk(gym.Env):
             selected = self._selected_dice(move)
 
             valid = True
-            for face in (2, 3, 4, 6):
+            for face in range(1,7):
                 count = selected.count(face)
-                if count == 1 or count == 2:
+                if (count == 1 or count == 2) and face != 1 and face != 5:
                     valid = False
                     break
+                elif count >= 3 and face == 1:
+                    reward += (count-2) * 1000
+                elif count >= 3:
+                    reward += (count-2) * face * 100
+                elif face == 1:
+                    reward += 100 * count
+                elif face == 5:
+                    reward += 50 * count
 
             if selected == [1, 2, 3, 4, 5, 6]:
                 valid = True
+                reward = 1500
             if self._is_three_pairs(selected):
                 valid = True
+                reward = 750
             if valid:
+                self.rewards[tuple([self.get_state(), move])] = reward
                 moves.append(move)
+        self.possible_moves[self.get_state()] = moves
         return moves

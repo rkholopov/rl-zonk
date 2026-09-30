@@ -3,6 +3,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 import numpy as np
+from time import time
 from collections import deque
 from Agents.Monte_Carlo import MonteCarlo
 from Agents.MonteCarloWIS import MonteCarloWIS
@@ -27,6 +28,7 @@ def main():
     env = Zonk()
     score = deque(maxlen=500)
     n = 0
+    start = time()
     while True:
         n+=1
         s, info = env.reset()
@@ -63,7 +65,8 @@ def main():
         score.append(total_reward)
         agent.update(episode)
         if n % 500 == 0:
-            print(f'На обучении: {sum(score) / len(score)}')
+            print(f'На обучении: {sum(score) / len(score)}, Скорость: {time()-start}')
+            start = time()
 
 
 if __name__ == '__main__':
