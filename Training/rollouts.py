@@ -18,8 +18,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Обучение Zonk с роллаутами')
     parser.add_argument('--agent', default='QLearning',
                         choices=['MonteCarlo', 'MonteCarloWIS', 'CrossEntropy', 'Baseline', 'QLearning'])
-    parser.add_argument('--soft', default='0.3', help='Число от 0 до 1 или Sampling')
-    parser.add_argument('--alpha', type=float, default=0.01)
+    parser.add_argument('--soft', default='0.1', help='Число от 0 до 1 или Sampling')
+    parser.add_argument('--alpha', type=float, default=0.3)
     parser.add_argument('--percentile', type=float, default=85)
     parser.add_argument('--episodes', type=int, default=None,
                         help='Число реальных эпизодов; без параметра запуск бесконечный')
